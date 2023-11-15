@@ -1,0 +1,597 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.mbedded.style">
+  .category_title {
+    color: #a7afc1;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    width: 100%;
+  }
+
+</style>
+<th:block layout:fragment="user.top.script">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+  <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+</th:block>
+
+
+<div class="main_inner" layout:fragment="content.north">
+  <div class="main-content-inner">
+    <div class="row">
+      <h3 class="category_title">Workload</h3>
+      <!-- pie chart start -->
+      <div class="col-lg-3 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Daemon set</h4>
+            <div id="daemonset_chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Deployment</h4>
+            <div id="ampiechart3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Pod</h4>
+            <div id="ampiechart33"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Replica set</h4>
+            <div id="ampiechart34"></div>
+          </div>
+        </div>
+      </div>
+      <!-- pie chart end -->
+      <!-- Cronjob table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Daemon set</h4>
+            <div class="data-tables datatable-primary">
+              <table id="cronjobTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Schedule</th>
+                  <th>Suspend</th>
+                  <th>Active</th>
+                  <th>Last Schedule</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Cronjob set table end -->
+      <!-- Daemon set table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Daemon set</h4>
+            <div class="data-tables datatable-primary">
+              <table id="daemonsetTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col style="width: 5%"/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Pod</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Daemon set table end -->
+      <!-- Deployment table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Deployment</h4>
+            <div class="data-tables datatable-primary">
+              <table id="deploymentTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col style="width: 5%"/>
+                  <col/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Pod</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                  <th>Operation</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Deployment table end -->
+      <!-- Job table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Deployment</h4>
+            <div class="data-tables datatable-primary">
+              <table id="jobTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Job table end -->
+      <!-- Pod table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Pod</h4>
+            <div class="data-tables datatable-primary">
+              <table id="podTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col style="width: 5%"/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Node</th>
+                  <th>Status</th>
+                  <th>Restart</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Pod table end -->
+      <!-- Pod table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Pod</h4>
+            <div class="data-tables datatable-primary">
+              <table id="podList" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col style="width: 5%"/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Node</th>
+                  <th>Status</th>
+                  <th>Restart</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Pod table end -->
+      <!-- Replica set table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Replica set</h4>
+            <div class="data-tables datatable-primary">
+              <table id="replicasetTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col style="width: 5%"/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Pod</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Replica set table end -->
+      <!-- Replication Controller table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Replication Controller</h4>
+            <div class="data-tables datatable-primary">
+              <table id="replicationTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Pod</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Replication Controller table end -->
+      <!-- Stateful set table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Stateful set</h4>
+            <div class="data-tables datatable-primary">
+              <table id="statefulsetTable" class="text-center overviewTable">
+                <colgroup>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                  <col/>
+                </colgroup>
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Pod</th>
+                  <th>Created</th>
+                  <th>Image</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Stateful set table end -->
+      <h3 class="category_title">Dicovery & Load Balancing</h3>
+      <!-- Ingress table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Ingress</h4>
+            <div class="data-tables datatable-primary">
+              <table id="ingressTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>End Point</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Ingress table end -->
+      <!-- Service table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Service</h4>
+            <div class="data-tables datatable-primary">
+              <table id="serviceTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Cluster IP</th>
+                  <th>Internal EP</th>
+                  <th>External EP</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Service table end -->
+      <h3 class="category_title">Config & Storage</h3>
+      <!-- Config map table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Config Map</h4>
+            <div class="data-tables datatable-primary">
+              <table id="configmapTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Label</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Config map table end -->
+      <!-- Persistent Volume Claim table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Persistent Volume Claim</h4>
+            <div class="data-tables datatable-primary">
+              <table id="pvcTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Status</th>
+                  <th>Volume</th>
+                  <th>Capacity</th>
+                  <th>Access mode</th>
+                  <th>Storage Class</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Persistent Volume Claim table end -->
+      <!-- Secret table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Secret</h4>
+            <div class="data-tables datatable-primary">
+              <table id="secretTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Type</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Secret table end -->
+      <!-- container table start -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="header-title">Secret</h4>
+            <div class="data-tables datatable-primary">
+              <table id="containerTable" class="text-center overviewTable">
+                <thead class="text-capitalize">
+                <tr>
+                  <th>Name</th>
+                  <th>Namespace</th>
+                  <th>Type</th>
+                  <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Container table end -->
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+  <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+  <!-- bootstrap 4 js -->
+  <script th:src="@{/js/popper.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/owl.carousel.min.js}"></script>
+  <script th:src="@{/js/metisMenu.min.js}"></script>
+  <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+  <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+  <!-- start amchart js -->
+  <script th:src="@{https://www.amcharts.com/lib/3/amcharts.js}"></script>
+  <script th:src="@{https://www.amcharts.com/lib/3/pie.js}"></script>
+  <script th:src="@{https://www.amcharts.com/lib/3/serial.js}"></script>
+  <script th:src="@{https://www.amcharts.com/lib/3/plugins/animate/animate.min.js}"></script>
+  <script th:src="@{https://www.amcharts.com/lib/3/plugins/export/export.min.js}"></script>
+  <script th:src="@{https://www.amcharts.com/lib/3/themes/light.js}"></script>
+  <!-- all pie chart --
+  <script th:src="@{/js/pie-chart.js}"></script>-->
+
+  <!-- Start datatable js -->
+  <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+  <!-- others plugins -->
+  <script th:src="@{/js/plugins.js}"></script>
+  <script th:src="@{/js/scripts.js}"></script>
+  <script th:src="@{/js/utils.js}"></script>
+  <script type="text/javascript">
+
+      var tables = $(".overviewTable");
+      var dataTables = [];
+      $.each(tables, function (index, item) {
+          var temp = {};
+         temp["id"] = $(item).prop("id").split("Table")[0];
+         temp["table"] = $(item).DataTable();
+         dataTables.push(temp);
+      });
+
+      console.log(dataTables);
+
+
+
+
+      $.ajax({
+          type: 'get',
+          datatype: 'json',
+          url: '/overview/load',
+          data: {},
+          beforeSend: function (xhr) {
+              xhr.setRequestHeader('Content-Type', 'application/json');
+          },
+          complete: function () {
+
+          },
+          success: function (serverData) {
+
+              var results = [];
+
+              $.each(serverData, function (key, value) {
+                  results[key] = JSON.parse(value);
+              });
+
+              console.log(results);
+
+              $.each(dataTables, function (index, item) {
+                  console.log(item.id , results[item.id]);
+                  drawTable(results[item.id], item.table);
+              });
+
+
+
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+
+          }
+      });
+
+
+  </script>
+</th:block>
+</html>

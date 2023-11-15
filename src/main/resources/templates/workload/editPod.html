@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.embedded.style">
+
+</style>
+<th:block layout:fragment="user.top.script">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/element.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+
+</th:block>
+<div class="main_inner" layout:fragment="content.north">
+    <div class="main-content-inner">
+    <title>Edit Pod</title>
+
+
+
+<h1>Edit Pod</h1>
+<!--        <input type="file" id="yamlFileInput" accept=".yaml, .yml">-->
+<!--        <button onclick="editPod()">上传并创建 Pod</button>-->
+
+
+
+        <form onsubmit="event.preventDefault(); editPod();">
+            <label for="podNameInput">Pod Name:</label>
+            <input type="text" id="podNameInput" required><br><br>
+            <label for="podNamespaceInput">Namespace:</label>
+            <input type="text" id="podNamespaceInput" required><br><br>
+
+            <button type="submit">Edit Pod</button>
+        </form>
+
+<tr>
+    <td th:id="'pod_name_' + ${podName}" th:text="${podName}"></td>
+    <td th:id="'pod_name_' + ${podNamespace}" th:text="${podNamespace}"></td>
+</tr>
+    </div>
+</div>
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- 引入 jQuery -->
+    <!--  <script type="javascript" src="../../static/assets/js/vue.js"></script>-->
+    <script src="../../static/assets/js/element.js"></script>
+    <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+    <!-- bootstrap 4 js -->
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/js/metisMenu.min.js}"></script>
+    <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+    <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+    <!-- Start datatable js -->
+    <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+    <!-- others plugins -->
+    <script th:src="@{/js/plugins.js}"></script>
+    <script th:src="@{/js/scripts.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            // 获取当前页面的 URL
+            const url = new URL(window.location.href);
+
+            // 创建 URLSearchParams 对象，解析 URL 查询参数
+            const params = new URLSearchParams(url.search);
+
+            // 获取 podName 参数的值
+            const podName = params.get('podName');
+
+            // 获取 podNamespace 参数的值
+            const podNamespace = params.get('podNamespace');
+
+            // 设置输入框的默认值为从 URL 获取到的 podName
+            document.getElementById('podNameInput').value = podName;
+            document.getElementById('podNamespaceInput').value = podNamespace;
+        };
+        function editPod() {
+            // 获取当前页面的 URL
+            const url = new URL(window.location.href);
+
+            // 创建 URLSearchParams 对象，解析 URL 查询参数
+            const params = new URLSearchParams(url.search);
+
+            // 获取 podName 参数的值
+            const podName = params.get('podName');
+
+            // 获取 podNamespace 参数的值
+            const podNamespace = params.get('podNamespace');
+
+
+            console.log(podName,podNamespace);
+            // const podName = document.getElementById("podName").value;
+            // const containerImage = document.getElementById("containerImage").value;
+
+
+
+
+
+            const formData = new FormData();
+            formData.append('podName', podName);
+            formData.append('podNamespace', podNamespace);
+
+
+
+            $.ajax({
+                url: '/workload/editPod',
+                type: 'POST',
+                dataType: 'text',
+                data: formData,
+                processData: false, // 禁止 jQuery 自动转换数据类型
+                contentType: false, // 禁止 jQuery 设置 MIME 类型
+                success: function(serverData) {
+                    console.log("到这了")
+                    alert(serverData);
+
+                    console.log(serverData);
+                    // window.location.href = '/workload/getPodList';
+                    // var podList = response.data.podList;
+                    // console.log(podList);
+                },
+                error: function(xhr, status, error) {
+                    console.log('迁移 Pod 失败：' + error);
+                }
+            });
+        }
+    </script>
+</th:block>
+</html>

@@ -1,0 +1,174 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.embedded.style">
+
+</style>
+<th:block layout:fragment="user.top.script">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/element.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+
+</th:block>
+<div class="main_inner" layout:fragment="content.north">
+    <div class="main-content-inner">
+    <title>Create Pod</title>
+
+
+
+<h1>Create Pod</h1>
+
+        <input type="file" id="yamlFileInput" accept=".yaml, .yml">
+        <button onclick="uploadYaml()">上传并创建 Pod</button>
+
+<!-- <form onsubmit="event.preventDefault(); createPod();">-->
+<!--    <label for="podName">Pod Name:</label>-->
+<!--    <input type="text" id="podName" required><br><br>-->
+
+<!--    <label for="containerImage">Container Image:</label>-->
+<!--    <input type="text" id="containerImage" required><br><br>-->
+
+<!--    <button type="submit">Create Pod</button>-->
+<!--</form>-->
+
+    </div>
+</div>
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- 引入 jQuery -->
+    <!--  <script type="javascript" src="../../static/assets/js/vue.js"></script>-->
+    <script src="../../static/assets/js/element.js"></script>
+    <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+    <!-- bootstrap 4 js -->
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/js/metisMenu.min.js}"></script>
+    <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+    <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+    <!-- Start datatable js -->
+    <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+    <!-- others plugins -->
+    <script th:src="@{/js/plugins.js}"></script>
+    <script th:src="@{/js/scripts.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script type="text/javascript">
+        function uploadYaml() {
+            const fileInput = document.getElementById('yamlFileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('请选择一个 YAML 文件');
+                return;
+            }
+
+            const fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.yaml') && !fileName.endsWith('.yml')) {
+                alert('只能上传 yaml 文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('yamlFile', file);
+
+            console.log("到这了")
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', '/workload/createPod');
+            xhr.setRequestHeader("enctype", "multipart/form-data");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('请求成功');
+                        // 获取服务器返回的响应数据
+                        let rtnData = xhr.responseText;
+                        alert(rtnData);
+                        window.location.href = '/workload/getPodList';
+                    } else {
+                        console.error('请求失败');
+                    }
+                }
+            };
+
+            xhr.send(formData);
+
+            // $.ajax({
+            //     url: '/createPod',
+            //     type: 'POST',
+            //     dataType: 'text',
+            //     data: formData,
+            //     processData: false,
+            //     contentType: false,
+            //     success: function(serverData) {
+            //         alert(serverData);
+            //         console.log(serverData);
+            //         window.location.href = '/getPodList';
+            //     },
+            //     error: function(xhr, status, error) {
+            //         console.log('创建 Pod 列表失败：' + error);
+            //     }
+            // });
+        }
+
+        function createPod() {
+            const podName = document.getElementById("podName").value;
+            const containerImage = document.getElementById("containerImage").value;
+
+            // fetch('/workload/createPod', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({
+            //         podName: podName,
+            //         containerImage: containerImage
+            //     })
+            // })
+            //     .then(response => response.text())
+            //     .then(result => {
+            //         console.log(result);
+            //         // 处理成功响应
+            //     })
+            //     .catch(error => {
+            //         console.error(error);
+            //         // 处理错误
+            //     });
+            $.ajax({
+                url: '/workload/createPod',
+                type: 'POST',
+                dataType: 'text',
+                data: {
+                    podName: podName,
+                    containerImage: containerImage
+                },
+                success: function(serverData) {
+
+                    alert(serverData);
+
+                    console.log(serverData);
+                    window.location.href = '/workload/getPodList';
+                    // var podList = response.data.podList;
+                    // console.log(podList);
+                },
+                error: function(xhr, status, error) {
+                    console.log('创建 Pod 列表失败：' + error);
+                }
+            });
+        }
+    </script>
+</th:block>
+</html>

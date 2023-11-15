@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.embedded.style">
+
+</style>
+<th:block layout:fragment="user.top.script">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+</th:block>
+
+
+<div class="main_inner" layout:fragment="content.north">
+  <div class="main-content-inner">
+    <div class="row">
+      <!-- Primary table start -->
+      <div class="col-12 mt-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="header-title">Ingress</h4>
+        <div class="data-tables datatable-primary">
+          <table id="ingressTable" class="text-center">
+            <thead class="text-capitalize">
+            <tr>
+              <th>Name</th>
+              <th>Namespace</th>
+              <th>End Point</th>
+              <th>Created</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+      <!-- Primary table end -->
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+  <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+  <!-- bootstrap 4 js -->
+  <script th:src="@{/js/popper.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/owl.carousel.min.js}"></script>
+  <script th:src="@{/js/metisMenu.min.js}"></script>
+  <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+  <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+  <!-- Start datatable js -->
+  <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+  <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+  <!-- others plugins -->
+  <script th:src="@{/js/plugins.js}"></script>
+  <script th:src="@{/js/scripts.js}"></script>
+  <script th:src="@{/js/utils.js}"></script>
+  <script type="text/javascript">
+      var table = $("#ingressTable").DataTable();
+
+      $.ajax({
+          type: 'get',
+          datatype: 'json',
+          url: '/disload/ingress/list',
+          data: {
+          },
+          beforeSend: function (xhr) {
+              xhr.setRequestHeader('Content-Type', 'application/json');
+          },
+          complete: function () {
+
+          },
+          success: function (serverData) {
+
+              var result = JSON.parse(serverData.result);
+
+
+              console.log(result);
+
+              drawTable(result, table);
+
+
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+
+          }
+      });
+  </script>
+</th:block>
+</html>

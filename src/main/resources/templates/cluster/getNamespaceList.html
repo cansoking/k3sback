@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.embedded.style">
+
+</style>
+<th:block layout:fragment="user.top.script">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/element.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+
+</th:block>
+
+<div class="main_inner" layout:fragment="content.north">
+    <div class="main-content-inner">
+        <h1>Pod List</h1>
+        <div id="app">
+
+
+            <!--    <el-table :data="podList">-->
+            <!--        &lt;!&ndash; 表格列的定义 &ndash;&gt;-->
+            <!--        <el-table-column prop="name" label="名称"></el-table-column>-->
+            <!--        <el-table-column prop="age" label="年龄"></el-table-column>-->
+            <!--        &lt;!&ndash; 其他列 &ndash;&gt;-->
+
+            <!--        &lt;!&ndash; 表格数据的渲染 &ndash;&gt;-->
+            <!--        <template v-for="pod in podList">-->
+            <!--            <el-table-column :key="pod.metadata.name">-->
+            <!--                {{ pod.metadata.name }}-->
+            <!--            </el-table-column>-->
+            <!--        </template>-->
+            <!--    </el-table>-->
+
+            <table>
+                <colgroup>
+                    <col/>
+                    <col/>
+                    <col/>
+                    <col/>
+                    <col/>
+                    <col/>
+                <colgroup/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>namespace名称</th>
+                    <th>label</th>
+                    <th>状态</th>
+                    <!--        <th>重启次数</th>-->
+                    <th>创建时间</th>
+                    <!-- 其他列 -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="namespace : ${namespaceList}">
+                    <td th:text="${namespace.metadata.name}"></td>
+                    <td th:text="${namespace.metadata.labels}"></td>
+                    <td th:text="${namespace.status.phase}"></td>
+                    <td>
+                        <!--        <span th:if="${#lists.isNotEmpty(pod.status.containerStatuses)}"-->
+                        <!--              th:text="${pod.status.containerStatuses[0].restartCount}"></span>-->
+                        <!--                <span th:unless="${#lists.isNotEmpty(pod.status.containerStatuses)}">N/A</span>-->
+                        <!--              </td>-->
+                    <td th:text="${namespace.metadata.creationTimestamp}"></td>
+                    <!-- 其他列 -->
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- 引入 jQuery -->
+    <!--  <script type="javascript" src="../../static/assets/js/vue.js"></script>-->
+    <script src="../../static/assets/js/element.js"></script>
+    <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+    <!-- bootstrap 4 js -->
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/js/metisMenu.min.js}"></script>
+    <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+    <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+    <!-- Start datatable js -->
+    <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+    <!-- others plugins -->
+    <script th:src="@{/js/plugins.js}"></script>
+    <script th:src="@{/js/scripts.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script type="text/javascript">
+
+
+        $.ajax({
+            url: '/workload/getPodList',
+            type: 'GET',
+            dataType: 'json',
+            success: function(serverData) {
+
+                var podList = [];
+
+                $.each(serverData, function (key, value) {
+                    podList[key] = JSON.parse(value);
+                });
+
+                console.log(podList);
+                // var podList = response.data.podList;
+                // console.log(podList);
+            },
+            error: function(xhr, status, error) {
+                console.log('获取 Pod 列表失败：' + error);
+            }
+        });
+
+
+        new Vue({
+            el: '#app',
+            data: function() {
+                return {
+                    visible: false ,
+                    tableData: []
+                }
+            },
+            mounted() {
+                // 在实际应用中，你可以从 API 或其他方式获取 podList 数据
+                this.fetchPodList();
+            },
+            methods: {
+                fetchPodList() {
+                    // 假设从后端获取 podList 数据
+                    // 例如使用 Axios 发起请求
+                    axios.get('/workload/getPodList').then(response => {
+                        this.podList = response.data;
+                        console.log(response.data);
+                    }).catch(error => {
+                        console.error(error);
+                    });
+                }
+            }
+        })
+    </script>
+</th:block>
+</html>
+
+
+
+

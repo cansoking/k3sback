@@ -1,0 +1,229 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.layout">
+
+<style type="text/css" layout:fragment="user.embedded.style">
+    td, th {
+        text-align: center;
+    }
+     .add-pod-button {
+         background-color: #007bff; /* 设置背景色为蓝色 */
+         color: #fff; /* 设置文本颜色为白色 */
+     }
+    .custom-button {
+        width: 100px; /* 设置按钮宽度为100像素 */
+        display: flex;
+        align-items: center;
+    }
+    .button-container {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+</style>
+<th:block layout:fragment="user.top.script">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/assets/css/element.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+
+</th:block>
+
+
+
+<div class="main_inner" layout:fragment="content.north">
+    <div class="main-content-inner">
+<h1>Pod List</h1>
+<div id="app">
+<!--    <button type="button" class="add-pod-button" onclick="goToCreatePage()">Add Pod</button>-->
+    <el-button type="primary" plain  onclick="goToCreatePage()">Add Pod</el-button>
+    <!-- 分页部分 -->
+<!--    <th:block th:fragment="pagination">-->
+<!--        <div class="pagination">-->
+<!--            <a th:href="@{/pods?page=1}" th:if="${currentPage > 1}">First</a>-->
+<!--            <a th:href="@{/pods?page=${currentPage - 1}}" th:if="${currentPage > 1}">Previous</a>-->
+<!--            <span th:text="${currentPage}"></span>-->
+<!--            <a th:href="@{/pods?page=${currentPage + 1}}" th:if="${currentPage < totalPages}">Next</a>-->
+<!--            <a th:href="@{/pods?page=${totalPages}}" th:if="${currentPage < totalPages}">Last</a>-->
+<!--        </div>-->
+<!--    </th:block>-->
+<table id="myTable">
+    <colgroup>
+        <col style="width: 150px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+        <col style="width: 100px;"/>
+    <colgroup/>
+    </colgroup>
+    <thead>
+    <tr>
+        <th>Pod名称</th>
+        <th>镜像</th>
+        <th>命名空间</th>
+        <th>node</th>
+        <th>状态</th>
+<!--        <th>重启次数</th>-->
+        <th>创建时间</th>
+<!--        <th>日志</th>-->
+<!--        <th>环境变量</th>-->
+<!--        <th>资源限制</th>-->
+<!--        <th>内存限制</th>-->
+        <th>操作</th>
+        <!-- 其他列 -->
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 遍历当前页的数据 -->
+<!--    <th:block th:each="pod : ${pagedResult.content}">-->
+         <tr th:each="pod : ${podList}">
+            <td th:id="'pod_name_' + ${pod.metadata.name}" th:text="${pod.metadata.name}"></td>
+            <td th:id="'pod_image_' + ${pod.metadata.name}" th:text="${pod.spec.containers[0].image}"></td>
+            <td th:id="'pod_namespace_' + ${pod.metadata.name}" th:text="${pod.metadata.namespace}"></td>
+            <td th:text="${pod.spec.nodeName}"></td>
+            <td th:text="${pod.status.phase}"></td>
+            <td th:text="${pod.metadata.creationTimestamp}"></td>
+
+<!--            <td th:text="${pod.spec.containers[0].resources.limits}"></td>-->
+            <td style="vertical-align: middle;">
+                <div class="button-container">
+                    <el-button type="success" class="custom-button" plain size="medium" th:data-name="${pod.metadata.name}" th:data-namespace="${pod.metadata.namespace}" onclick="editPod(this.getAttribute('data-name'), this.getAttribute('data-namespace'))">edit</el-button>
+                </div>
+                <div class="button-container">
+                    <el-button type="danger" class="custom-button" plain size="medium" th:data-name="${pod.metadata.name}" th:data-namespace="${pod.metadata.namespace}" onclick="deletePod(this.getAttribute('data-name'), this.getAttribute('data-namespace'))">delete</el-button>
+    <!--                <el-button type="danger" class="custom-button" plain size="medium" th:data-name="${pod.metadata.name}" th:data-namespace="${pod.metadata.namespace}" onclick="deletePod(this.getAttribute('data-name'), this.getAttribute('data-namespace'))">delete</el-button>-->
+                </div>
+            </td>
+        </tr>
+
+<!--    </th:block>-->
+
+    </tbody>
+</table>
+    <!-- 调用分页块 -->
+<!--    <th:block th:replace="template :: pagination"></th:block>-->
+
+</div>
+    </div>
+</div>
+
+<th:block layout:fragment="user.embedded.script" th:remove="tag">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- 引入 jQuery -->
+    <!--  <script type="javascript" src="../../static/assets/js/vue.js"></script>-->
+    <script src="../../static/assets/js/element.js"></script>
+    <script th:src="@{/js/vendor/jquery-2.2.4.min.js}"></script>
+    <!-- bootstrap 4 js -->
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/js/metisMenu.min.js}"></script>
+    <script th:src="@{/js/jquery.slimscroll.min.js}"></script>
+    <script th:src="@{/js/jquery.slicknav.min.js}"></script>
+
+    <!-- Start datatable js -->
+    <script th:src="@{https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js}"></script>
+    <!-- others plugins -->
+    <script th:src="@{/js/plugins.js}"></script>
+    <script th:src="@{/js/scripts.js}"></script>
+    <script th:src="@{/js/utils.js}"></script>
+    <script type="text/javascript">
+        function goToCreatePage() {
+            console.log("Go to create page");
+            window.location.href = "/workload/createPod";
+        };
+        function editPod(podName,podNamespace) {
+            console.log("Go to edit page");
+            window.location.href = "/workload/editPod?podName=" + podName + "&podNamespace=" + podNamespace;
+        };
+        function deletePod(name, namespace){
+            // var podName = document.getElementById('pod_name_' + index).innerText;
+            // var namespace = document.getElementById('pod_namespace_' + index).innerText;
+            console.log("Deleting pod with name: " + name + " and namespace: " + namespace);
+            // console.log("Delete Pod: " + podName + ", Namespace: " + namespace);
+
+            $.ajax({
+                url: '/workload/deletePod',
+                // url: '/workload/deletePod',
+                type: 'POST',
+                dataType: 'text',
+                data:{
+                    podName:name,
+                    podNamespace:namespace
+                },
+                success: function(serverData) {
+
+                    alert(serverData);
+
+                    console.log(serverData);
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log('删除 Pod 列表失败：' + error);
+                }
+            });
+        };
+    //     $.ajax({
+    //     url: '/workload/getPodList',
+    //     type: 'GET',
+    //     dataType: 'json',
+    //     success: function(serverData) {
+    //
+    //         var podList = [];
+    //
+    //         $.each(serverData, function (key, value) {
+    //             podList[key] = JSON.parse(value);
+    //         });
+    //
+    //         console.log(podList);
+    //         // var podList = response.data.podList;
+    //         // console.log(podList);
+    //     },
+    //     error: function(xhr, status, error) {
+    //         console.log('获取 Pod 列表失败：' + error);
+    //     }
+    // });
+
+
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                visible: false ,
+                tableData: []
+            }
+        },
+        mounted() {
+            // 在实际应用中，你可以从 API 或其他方式获取 podList 数据
+            this.fetchPodList();
+        },
+        methods: {
+            fetchPodList() {
+                // 假设从后端获取 podList 数据
+                // 例如使用 Axios 发起请求
+
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+            }
+        }
+    })
+</script>)
+</th:block>
+</html>
