@@ -1,5 +1,6 @@
 package prv.gdk.kubedash.controllers;
 
+import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import prv.gdk.kubedash.entity.ContainerInfo;
+import prv.gdk.kubedash.entity.DeploymentInfo;
 import prv.gdk.kubedash.entity.PodInfo;
 
 import java.io.FileReader;
@@ -186,6 +188,74 @@ public class DeploymentController {
             return service.getMetadata().getLabels().get(labelKey);
         }
         return null;
+    }
+
+    @RequestMapping(value ="/deployByParam", method = RequestMethod.POST)
+    @ResponseBody
+    public String deploy(@RequestBody DeploymentInfo request) throws IOException, ApiException {
+
+        String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
+        ApiClient client =
+                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
+        Configuration.setDefaultApiClient(client);
+
+        //初始化DeploymentInfo
+        DeploymentInfo deploymentInfo = new DeploymentInfo();
+        deploymentInfo.setDeploymentName("your-java-web-app5");
+        deploymentInfo.setImage("zytest:1.1");
+        deploymentInfo.setContainerPort(8080);
+        deploymentInfo.setServicePort(80);
+        deploymentInfo.setNodePort(30005);
+
+        // 创建 Deployment 和 Service
+        createDeploymentByParam(deploymentInfo);
+        createServiceByParam(deploymentInfo);
+
+        return "Deployment and Service created successfully.";
+    }
+
+    private void createDeploymentByParam(DeploymentInfo request) throws ApiException {
+        AppsV1Api appsApi = new AppsV1Api();
+
+        String deploymentName = request.getDeploymentName();
+
+        // 构建 Deployment 对象
+        V1Deployment deployment = new V1Deployment()
+                .apiVersion("apps/v1")
+                .kind("Deployment")
+                .metadata(new V1ObjectMeta().name(deploymentName).labels(Collections.singletonMap("app", deploymentName)))
+                .spec(new V1DeploymentSpec()
+                        .replicas(1)
+                        .selector(new V1LabelSelector().matchLabels(Collections.singletonMap("app", deploymentName)))
+                        .template(new V1PodTemplateSpec()
+                                .metadata(new V1ObjectMeta().labels(Collections.singletonMap("app", deploymentName)))
+                                .spec(new V1PodSpec()
+                                        .containers(Collections.singletonList(new V1Container()
+                                                .name(deploymentName)
+                                                .image(request.getImage())
+                                                .ports(Collections.singletonList(new V1ContainerPort().containerPort(request.getContainerPort()))))))));
+
+
+        // 创建 Deployment
+        appsApi.createNamespacedDeployment("default", deployment, null, null, null);
+    }
+
+    private void createServiceByParam(DeploymentInfo request) throws ApiException {
+        CoreV1Api coreApi = new CoreV1Api();
+
+        String serviceName = request.getDeploymentName() + "-service";
+
+        // 构建 Service 对象
+        V1Service service = new V1Service()
+                .apiVersion("v1")
+                .kind("Service")
+                .metadata(new V1ObjectMeta().name(serviceName).labels(Collections.singletonMap("app", request.getDeploymentName())))
+                .spec(new V1ServiceSpec()
+                        .selector(Collections.singletonMap("app", request.getDeploymentName()))
+                        .type("NodePort")
+                        .ports(Collections.singletonList(new V1ServicePort().port(request.getServicePort()).targetPort(new IntOrString(request.getContainerPort())).nodePort(request.getNodePort()))));
+        // 创建 Service
+        coreApi.createNamespacedService("default", service, null, null, null);
     }
 
     
