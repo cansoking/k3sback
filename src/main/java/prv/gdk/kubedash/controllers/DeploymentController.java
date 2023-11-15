@@ -199,17 +199,17 @@ public class DeploymentController {
                 ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
         Configuration.setDefaultApiClient(client);
 
-        //初始化DeploymentInfo
+        /*//初始化DeploymentInfo
         DeploymentInfo deploymentInfo = new DeploymentInfo();
         deploymentInfo.setDeploymentName("your-java-web-app5");
         deploymentInfo.setImage("zytest:1.1");
         deploymentInfo.setContainerPort(8080);
         deploymentInfo.setServicePort(80);
-        deploymentInfo.setNodePort(30005);
+        deploymentInfo.setNodePort(30005);*/
 
         // 创建 Deployment 和 Service
-        createDeploymentByParam(deploymentInfo);
-        createServiceByParam(deploymentInfo);
+        createDeploymentByParam(request);
+        createServiceByParam(request);
 
         return "Deployment and Service created successfully.";
     }
