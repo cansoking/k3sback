@@ -1,6 +1,7 @@
 package prv.gdk.kubedash.controllers;
 
 import io.kubernetes.client.custom.IntOrString;
+import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -35,7 +36,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("delpoyment")
+@RequestMapping("/deployment")
 public class DeploymentController {
     @Value("${k8s.config}")
     private String k8sConfig;
@@ -43,8 +44,9 @@ public class DeploymentController {
     @Value("${k8s.token}")
     private String k8sToken;
 
-    private static final String KUBERNETES_API_SERVER = "https://192.168.174.133:6443";
+    private static final String KUBERNETES_API_SERVER = "https://192.168.64.129:6443";
 
+    @CrossOrigin
     @RequestMapping(value = "/deleteDeployment", method = RequestMethod.GET)
     public String deleteDeploymentAndService(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
         String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
@@ -69,6 +71,7 @@ public class DeploymentController {
     }
 
 
+    @CrossOrigin
     @RequestMapping(value = "/createDeployment", method = RequestMethod.POST)
     @ResponseBody
     public String createDeployment(@RequestParam("yamlFile") MultipartFile yamlFile) throws IOException, ApiException {
@@ -155,7 +158,7 @@ public class DeploymentController {
 
         return "Deployment created successfully.";
     }
-
+    @CrossOrigin
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ModelAndView getDeploymentList() throws IOException, ApiException {
 
@@ -258,7 +261,59 @@ public class DeploymentController {
         coreApi.createNamespacedService("default", service, null, null, null);
     }
 
-    
+    @RequestMapping(value = "/stopDeploymentName", method = RequestMethod.GET)
+    public String stopDeployment(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
+        String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
+        ApiClient client =
+                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
+        Configuration.setDefaultApiClient(client);
+
+        AppsV1Api appsApi = new AppsV1Api();
+        //修改k3s中Deployment的replicas为0
+        //V1Patch patch = new V1Patch("{\"spec\":{\"replicas\":0}}");
+        V1Patch patch = new V1Patch("[{ \"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0 }]");
+
+        try {
+            appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+        } catch (ApiException e) {
+            System.out.println("Exception caught!");
+            System.out.println("Status code: " + e.getCode());
+            System.out.println("Response body: " + e.getResponseBody());
+            e.printStackTrace();
+        }
+
+
+
+
+        return "Deployment stopped successfully.";
+    }
+
+    @RequestMapping(value = "/startDeploymentName", method = RequestMethod.GET)
+    public String startDeploymentName(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
+        String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
+        ApiClient client =
+                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
+        Configuration.setDefaultApiClient(client);
+
+        AppsV1Api appsApi = new AppsV1Api();
+        //修改k3s中Deployment的replicas为0
+        //V1Patch patch = new V1Patch("{\"spec\":{\"replicas\":0}}");
+        V1Patch patch = new V1Patch("[{ \"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 1 }]");
+
+        try {
+            appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+        } catch (ApiException e) {
+            System.out.println("Exception caught!");
+            System.out.println("Status code: " + e.getCode());
+            System.out.println("Response body: " + e.getResponseBody());
+            e.printStackTrace();
+        }
+
+
+
+
+        return "Deployment start successfully.";
+    }
 
     
 
