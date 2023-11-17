@@ -34,8 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 
 
+@CrossOrigin
 @Controller
-@RequestMapping("delpoyment")
+@RequestMapping("/deployment")
 public class DeploymentController {
     @Value("${k8s.config}")
     private String k8sConfig;
@@ -43,7 +44,7 @@ public class DeploymentController {
     @Value("${k8s.token}")
     private String k8sToken;
 
-    private static final String KUBERNETES_API_SERVER = "https://192.168.174.133:6443";
+    private static final String KUBERNETES_API_SERVER = "https://192.168.91.129:6443";
 
     @RequestMapping(value = "/deleteDeployment", method = RequestMethod.GET)
     public String deleteDeploymentAndService(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {

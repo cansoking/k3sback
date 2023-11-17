@@ -40,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
+@CrossOrigin
 @Controller
 @RequestMapping("workload")
 public class WorkloadController {
@@ -100,7 +101,7 @@ public class WorkloadController {
         }
 
 
-        modelAndView.addObject("podList", podList.getItems());
+//        modelAndView.addObject("podList", podList.getItems());
 
 
         return modelAndView;
