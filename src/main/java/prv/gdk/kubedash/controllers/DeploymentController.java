@@ -20,9 +20,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import prv.gdk.kubedash.entity.ContainerInfo;
 import prv.gdk.kubedash.entity.DeploymentInfo;
-import prv.gdk.kubedash.entity.PodInfo;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,7 +34,7 @@ import java.util.List;
 
 
 @Controller
-@RequestMapping("delpoyment")
+@RequestMapping("deployment")
 public class DeploymentController {
     @Value("${k8s.config}")
     private String k8sConfig;
@@ -45,8 +43,9 @@ public class DeploymentController {
     private String k8sToken;
 
     private static final String KUBERNETES_API_SERVER = "https://192.168.174.133:6443";
-
-    @RequestMapping(value = "/deleteDeployment", method = RequestMethod.GET)
+    @CrossOrigin
+    @ResponseBody
+    @RequestMapping(value = "/deleteDeployment", method = RequestMethod.POST)
     public String deleteDeploymentAndService(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
         String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
         ApiClient client =
@@ -55,21 +54,26 @@ public class DeploymentController {
 
         CoreV1Api api = new CoreV1Api();
         AppsV1Api appsApi = new AppsV1Api();
-        // 删除 Deployment
-        appsApi.deleteNamespacedDeployment(deploymentName, "default", null, null, null, null, null, null);
+        try{
+            // 删除 Deployment
+            appsApi.deleteNamespacedDeployment(deploymentName, "default", null, null, null, null, null, null);
 
-        // 删除 Service
-        V1ServiceList serviceList = api.listNamespacedService("default", null, null, null, null, null, null, null, null, null, null);
-        for (V1Service service : serviceList.getItems()) {
-            if (deploymentName.equals(getServiceLabelValue(service, "app"))) {
-                api.deleteNamespacedService(service.getMetadata().getName(), "default", null, null, null, null, null, null);
+            // 删除 Service
+            V1ServiceList serviceList = api.listNamespacedService("default", null, null, null, null, null, null, null, null, null, null);
+            for (V1Service service : serviceList.getItems()) {
+                if (deploymentName.equals(getServiceLabelValue(service, "app"))) {
+                    api.deleteNamespacedService(service.getMetadata().getName(), "default", null, null, null, null, null, null);
+                }
             }
+            return "Deployment and Service deleted successfully.";
+        }catch (ApiException e){
+            return "Deployment and Service deleted failed.";
         }
-        return "Deployment and Service deleted successfully.";
+
 
     }
 
-
+    @CrossOrigin
     @RequestMapping(value = "/createDeployment", method = RequestMethod.POST)
     @ResponseBody
     public String createDeployment(@RequestParam("yamlFile") MultipartFile yamlFile) throws IOException, ApiException {
@@ -156,7 +160,7 @@ public class DeploymentController {
 
         return "Deployment created successfully.";
     }
-
+    @CrossOrigin
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ModelAndView getDeploymentList() throws IOException, ApiException {
 
@@ -190,7 +194,7 @@ public class DeploymentController {
         }
         return null;
     }
-
+    @CrossOrigin
     @RequestMapping(value ="/deployByParam", method = RequestMethod.POST)
     @ResponseBody
     public String deploy(@RequestBody DeploymentInfo request) throws IOException, ApiException {
@@ -214,7 +218,7 @@ public class DeploymentController {
 
         return "Deployment and Service created successfully.";
     }
-
+    @CrossOrigin
     private void createDeploymentByParam(DeploymentInfo request) throws ApiException {
         AppsV1Api appsApi = new AppsV1Api();
 
@@ -240,7 +244,7 @@ public class DeploymentController {
         // 创建 Deployment
         appsApi.createNamespacedDeployment("default", deployment, null, null, null);
     }
-
+    @CrossOrigin
     private void createServiceByParam(DeploymentInfo request) throws ApiException {
         CoreV1Api coreApi = new CoreV1Api();
 
@@ -258,8 +262,9 @@ public class DeploymentController {
         // 创建 Service
         coreApi.createNamespacedService("default", service, null, null, null);
     }
-
-    @RequestMapping(value = "/stopDeploymentName", method = RequestMethod.GET)
+    @CrossOrigin
+    @ResponseBody
+    @RequestMapping(value = "/stopDeployment", method = RequestMethod.GET)
     public String stopDeployment(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
         String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
         ApiClient client =
@@ -273,20 +278,24 @@ public class DeploymentController {
 
         try {
             appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+            return "Deployment stopped successfully.";
         } catch (ApiException e) {
             System.out.println("Exception caught!");
             System.out.println("Status code: " + e.getCode());
             System.out.println("Response body: " + e.getResponseBody());
             e.printStackTrace();
+            return "Deployment stopped fail.";
         }
 
 
 
 
-        return "Deployment stopped successfully.";
+
     }
 
-    @RequestMapping(value = "/startDeploymentName", method = RequestMethod.GET)
+    @CrossOrigin
+    @ResponseBody
+    @RequestMapping(value = "/startDeployment", method = RequestMethod.GET)
     public String startDeploymentName(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
         String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
         ApiClient client =
@@ -300,17 +309,19 @@ public class DeploymentController {
 
         try {
             appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+            return "Deployment start successfully.";
         } catch (ApiException e) {
             System.out.println("Exception caught!");
             System.out.println("Status code: " + e.getCode());
             System.out.println("Response body: " + e.getResponseBody());
             e.printStackTrace();
+            return "Deployment start fail.";
         }
 
 
 
 
-        return "Deployment start successfully.";
+
     }
 
     
