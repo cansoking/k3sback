@@ -1,6 +1,7 @@
 package prv.gdk.kubedash.controllers;
 
 import io.kubernetes.client.custom.IntOrString;
+import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -256,6 +257,60 @@ public class DeploymentController {
                         .ports(Collections.singletonList(new V1ServicePort().port(request.getServicePort()).targetPort(new IntOrString(request.getContainerPort())).nodePort(request.getNodePort()))));
         // 创建 Service
         coreApi.createNamespacedService("default", service, null, null, null);
+    }
+
+    @RequestMapping(value = "/stopDeploymentName", method = RequestMethod.GET)
+    public String stopDeployment(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
+        String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
+        ApiClient client =
+                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
+        Configuration.setDefaultApiClient(client);
+
+        AppsV1Api appsApi = new AppsV1Api();
+        //修改k3s中Deployment的replicas为0
+        //V1Patch patch = new V1Patch("{\"spec\":{\"replicas\":0}}");
+        V1Patch patch = new V1Patch("[{ \"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 0 }]");
+
+        try {
+            appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+        } catch (ApiException e) {
+            System.out.println("Exception caught!");
+            System.out.println("Status code: " + e.getCode());
+            System.out.println("Response body: " + e.getResponseBody());
+            e.printStackTrace();
+        }
+
+
+
+
+        return "Deployment stopped successfully.";
+    }
+
+    @RequestMapping(value = "/startDeploymentName", method = RequestMethod.GET)
+    public String startDeploymentName(@RequestParam("deploymentName") String deploymentName) throws IOException, ApiException {
+        String kubeConfigPath = ResourceUtils.getURL(k8sConfig).getPath();
+        ApiClient client =
+                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
+        Configuration.setDefaultApiClient(client);
+
+        AppsV1Api appsApi = new AppsV1Api();
+        //修改k3s中Deployment的replicas为0
+        //V1Patch patch = new V1Patch("{\"spec\":{\"replicas\":0}}");
+        V1Patch patch = new V1Patch("[{ \"op\": \"replace\", \"path\": \"/spec/replicas\", \"value\": 1 }]");
+
+        try {
+            appsApi.patchNamespacedDeployment(deploymentName, "default", patch, null, null, null, null);
+        } catch (ApiException e) {
+            System.out.println("Exception caught!");
+            System.out.println("Status code: " + e.getCode());
+            System.out.println("Response body: " + e.getResponseBody());
+            e.printStackTrace();
+        }
+
+
+
+
+        return "Deployment start successfully.";
     }
 
     
