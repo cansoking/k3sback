@@ -1,10 +1,12 @@
-package prv.gdk.kubedash.controllers;
+package com.xw.cloud.controller;
 
+import com.xw.cloud.bean.ContainerInfo;
+import com.xw.cloud.bean.PodInfo;
+import com.xw.cloud.bean.PvcInfo;
+import com.xw.cloud.bean.RequestInfo;
 import io.kubernetes.client.openapi.models.V1DeleteOptions;
 
-import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.models.*;
-import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 
 import okhttp3.*;
@@ -12,8 +14,6 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
-import io.kubernetes.client.openapi.apis.BatchV1Api;
-import io.kubernetes.client.openapi.apis.BatchV1beta1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.util.ClientBuilder;
 
@@ -25,18 +25,14 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 
 import java.io.InputStream;
 
 import okhttp3.Response;
-import prv.gdk.kubedash.entity.ContainerInfo;
-import prv.gdk.kubedash.entity.PodInfo;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -348,13 +344,16 @@ public class WorkloadController {
 //                            @RequestParam("containerName") String containerName,
 //                            @RequestParam("containerImage") String containerImage
 
-    public String createPod(@RequestBody PodInfo podinfo) throws IOException, ApiException {
+    public String createPod(@RequestBody RequestInfo requestInfo) throws IOException, ApiException {
+
+        PodInfo podinfo = requestInfo.getPodInfo();
+        PvcInfo pvcInfo = requestInfo.getPvcInfo();
 
         String podName = podinfo.getPodName();
         String podNamespace = podinfo.getPodNamespace();
         String podNodeName = podinfo.getPodNodeName();
         List<ContainerInfo> containerInfoList = podinfo.getContainerInfoList();
-//        nodeName = "server1";
+        String pvcName = pvcInfo.getPvcName();
 
 
         System.out.println(podNamespace);
@@ -405,18 +404,31 @@ public class WorkloadController {
 
 //            containers.add(container1);
 
+
+            // 创建 PVC
+            V1PersistentVolumeClaimVolumeSource pvcVolumeSource = new V1PersistentVolumeClaimVolumeSource();
+            pvcVolumeSource.setClaimName(pvcName);
+
+            V1Volume pvcVolume = new V1Volume();
+            pvcVolume.setName(pvcName);
+            pvcVolume.setPersistentVolumeClaim(pvcVolumeSource);
+
+            //创建spec
             V1PodSpec podSpec = new V1PodSpec()
                     .nodeName(podNodeName)
+                    .volumes(Collections.singletonList(pvcVolume))
                     .containers(containers);
 
             //添加单个container
 //      V1PodSpec podSpec = new V1PodSpec()
 //              .containers(Collections.singletonList(container));
 
+            //创建metadata
             V1ObjectMeta podMetadata = new V1ObjectMeta()
                     .namespace(podNamespace)
                     .name(podName);
 
+            //创建pod
             V1Pod pod = new V1Pod()
                     .metadata(podMetadata)
                     .spec(podSpec);

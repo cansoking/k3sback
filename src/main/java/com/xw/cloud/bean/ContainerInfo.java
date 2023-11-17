@@ -1,4 +1,4 @@
-package prv.gdk.kubedash.entity;
+package com.xw.cloud.bean;
 
 public class ContainerInfo {
     private String containerName;
