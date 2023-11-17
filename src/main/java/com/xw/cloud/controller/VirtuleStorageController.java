@@ -106,7 +106,7 @@ public class VirtuleStorageController {
         String persistentVolumeAccessMode = pvInfo.getPvAccessMode();
 
         String persistentVolumeClaimName = pvcInfo.getPvcName();
-        String persistentVolumeClaimNamespace = pvcInfo.getPvcName();
+        String persistentVolumeClaimNamespace = pvcInfo.getPvcNamespace();
         String persistentVolumeClaimQuantity = pvcInfo.getPvcQuantity();
 
 
