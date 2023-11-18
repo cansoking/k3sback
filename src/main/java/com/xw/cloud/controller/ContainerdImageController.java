@@ -242,7 +242,6 @@ public class ContainerdImageController {
                               @RequestParam("userName") String userName,
                               @RequestParam("userPassword") String userPassword) throws IOException {
 
-
 //        String virtualMachineIp = "192.168.174.133";
 //        String userName = "root";
 //        String userPassword = "@wsad1234";

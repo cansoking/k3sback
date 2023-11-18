@@ -117,7 +117,6 @@ public class VirtuleStorageController {
         Session session = null;
         Channel channel = null;
 
-
         try {
 
             JSch jsch = new JSch();
