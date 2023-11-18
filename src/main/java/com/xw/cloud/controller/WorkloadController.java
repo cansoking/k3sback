@@ -343,17 +343,17 @@ public class WorkloadController {
 //                            @RequestParam("podNamespace") String podNamespace,
 //                            @RequestParam("containerName") String containerName,
 //                            @RequestParam("containerImage") String containerImage
+    public String createPod(@RequestBody PodInfo podInfo) throws IOException, ApiException {
+//    public String createPod(@RequestBody RequestInfo requestInfo) throws IOException, ApiException {
 
-    public String createPod(@RequestBody RequestInfo requestInfo) throws IOException, ApiException {
+//        PodInfo podInfo = requestInfo.getPodInfo();
+//        PvcInfo podInfo = requestInfo.getPvcInfo();
 
-        PodInfo podinfo = requestInfo.getPodInfo();
-        PvcInfo pvcInfo = requestInfo.getPvcInfo();
-
-        String podName = podinfo.getPodName();
-        String podNamespace = podinfo.getPodNamespace();
-        String podNodeName = podinfo.getPodNodeName();
-        List<ContainerInfo> containerInfoList = podinfo.getContainerInfoList();
-        String pvcName = pvcInfo.getPvcName();
+        String podName = podInfo.getPodName();
+        String podNamespace = podInfo.getPodNamespace();
+        String podNodeName = podInfo.getPodNodeName();
+        List<ContainerInfo> containerInfoList = podInfo.getContainerInfoList();
+//        String pvcName = pvcInfo.getPvcName();
 
 
         System.out.println(podNamespace);
@@ -406,17 +406,17 @@ public class WorkloadController {
 
 
             // 创建 PVC
-            V1PersistentVolumeClaimVolumeSource pvcVolumeSource = new V1PersistentVolumeClaimVolumeSource();
-            pvcVolumeSource.setClaimName(pvcName);
-
-            V1Volume pvcVolume = new V1Volume();
-            pvcVolume.setName(pvcName);
-            pvcVolume.setPersistentVolumeClaim(pvcVolumeSource);
+//            V1PersistentVolumeClaimVolumeSource pvcVolumeSource = new V1PersistentVolumeClaimVolumeSource();
+//            pvcVolumeSource.setClaimName(pvcName);
+//
+//            V1Volume pvcVolume = new V1Volume();
+//            pvcVolume.setName(pvcName);
+//            pvcVolume.setPersistentVolumeClaim(pvcVolumeSource);
 
             //创建spec
             V1PodSpec podSpec = new V1PodSpec()
                     .nodeName(podNodeName)
-                    .volumes(Collections.singletonList(pvcVolume))
+//                    .volumes(Collections.singletonList(pvcVolume))
                     .containers(containers);
 
             //添加单个container
