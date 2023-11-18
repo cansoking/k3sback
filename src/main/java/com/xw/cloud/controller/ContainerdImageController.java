@@ -294,7 +294,6 @@ public class ContainerdImageController {
             sftpChannel.put(tarFile.getInputStream(), imagePath+ "/" + tarFile.getOriginalFilename());
 
             System.out.println(tarFile.getOriginalFilename());
-
             // 执行命令
             Channel execChannel = session.openChannel("exec");
             ((ChannelExec) execChannel).setCommand("ctr -n=k8s.io  image import " + imagePath+ "/" + tarFile.getOriginalFilename()); // 设置执行的命令
