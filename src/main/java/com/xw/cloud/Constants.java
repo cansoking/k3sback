@@ -1,4 +1,4 @@
-package prv.gdk.kubedash;
+package com.xw.cloud;
 
 public class Constants {
 

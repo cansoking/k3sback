@@ -1,4 +1,4 @@
-package prv.gdk.kubedash.controllers;
+package com.xw.cloud.controller;
 import io.kubernetes.client.openapi.models.*;
 import okhttp3.Call;
 import okhttp3.Response;

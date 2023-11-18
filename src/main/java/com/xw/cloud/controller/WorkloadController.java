@@ -38,7 +38,7 @@ import java.util.*;
 
 @CrossOrigin
 @Controller
-@RequestMapping("workload")
+@RequestMapping("/workload")
 public class WorkloadController {
     @Value("${k8s.config}")
     private String k8sConfig;
@@ -46,7 +46,7 @@ public class WorkloadController {
     @Value("${k8s.token}")
     private String k8sToken;
 
-    private static final String KUBERNETES_API_SERVER = "https://192.168.174.133:6443";
+    private static final String KUBERNETES_API_SERVER = "https://192.168.91.129:6443";
 
     
 

@@ -1,4 +1,4 @@
-package prv.gdk.kubedash;
+package com.xw.cloud;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

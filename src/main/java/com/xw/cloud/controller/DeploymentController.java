@@ -1,4 +1,4 @@
-package prv.gdk.kubedash.controllers;
+package com.xw.cloud.controller;
 
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.custom.V1Patch;
@@ -15,24 +15,19 @@ import okhttp3.Call;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import prv.gdk.kubedash.entity.DeploymentInfo;
+import com.xw.cloud.bean.DeploymentInfo;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 
+@CrossOrigin
 @Controller
 @RequestMapping("deployment")
 public class DeploymentController {
@@ -42,7 +37,7 @@ public class DeploymentController {
     @Value("${k8s.token}")
     private String k8sToken;
 
-    private static final String KUBERNETES_API_SERVER = "https://192.168.174.133:6443";
+    private static final String KUBERNETES_API_SERVER = "https://192.168.91.129:6443";
     @CrossOrigin
     @ResponseBody
     @RequestMapping(value = "/deleteDeployment", method = RequestMethod.POST)

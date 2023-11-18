@@ -1,4 +1,4 @@
-package prv.gdk.kubedash.configs;
+package com.xw.cloud.configs;
 
 
 import org.springframework.beans.BeansException;
