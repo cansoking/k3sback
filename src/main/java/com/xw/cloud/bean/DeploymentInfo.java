@@ -1,49 +1,49 @@
 package com.xw.cloud.bean;
 
 public class DeploymentInfo {
-    private String DeploymentName;
-    private String Image;
-    private Integer ContainerPort;
-    private Integer ServicePort;
-    private Integer NodePort;
+    private String deploymentName;
+    private String image;
+    private Integer containerPort;
+    private Integer servicePort;
+    private Integer nodePort;
 
     public String getDeploymentName() {
-        return DeploymentName;
+        return deploymentName;
     }
 
     public void setDeploymentName(String deploymentName) {
-        DeploymentName = deploymentName;
+        this.deploymentName = deploymentName;
     }
 
     public String getImage() {
-        return Image;
+        return image;
     }
 
     public void setImage(String image) {
-        Image = image;
+        this.image = image;
     }
 
     public Integer getContainerPort() {
-        return ContainerPort;
+        return containerPort;
     }
 
     public void setContainerPort(Integer containerPort) {
-        ContainerPort = containerPort;
+        this.containerPort = containerPort;
     }
 
     public Integer getServicePort() {
-        return ServicePort;
+        return servicePort;
     }
 
     public void setServicePort(Integer servicePort) {
-        ServicePort = servicePort;
+        this.servicePort = servicePort;
     }
 
     public Integer getNodePort() {
-        return NodePort;
+        return nodePort;
     }
 
     public void setNodePort(Integer nodePort) {
-        NodePort = nodePort;
+        this.nodePort = nodePort;
     }
 }
