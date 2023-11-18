@@ -266,23 +266,38 @@ public class ContainerdImageController {
             channel.connect();
             ChannelSftp sftpChannel = (ChannelSftp) channel;
 
+            String imagePath = "/opt/tar";
+
             // 检查目标文件夹是否存在，如果不存在则创建
             try {
-                sftpChannel.ls("/opt/tar"); // 尝试列出目录
+                sftpChannel.ls(imagePath); // 尝试列出目录
             } catch (SftpException e) {
                 if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
-                    sftpChannel.mkdir("/opt/tar"); // 目录不存在，创建目录
+                    String[] dirs = imagePath.split("/");
+                    String path = "";
+                    for (String dir : dirs) {
+                        if (!dir.isEmpty()) {
+                            path += "/" + dir;
+                            try {
+                                sftpChannel.ls(path); // 尝试列出目录
+                            } catch (SftpException ex) {
+                                if (ex.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+                                    sftpChannel.mkdir(path); // 目录不存在，创建目录
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
             // 传输文件
-            sftpChannel.put(tarFile.getInputStream(), "/opt/tar/" + tarFile.getOriginalFilename());
+            sftpChannel.put(tarFile.getInputStream(), imagePath+ "/" + tarFile.getOriginalFilename());
 
             System.out.println(tarFile.getOriginalFilename());
 
             // 执行命令
             Channel execChannel = session.openChannel("exec");
-            ((ChannelExec) execChannel).setCommand("ctr -n=k8s.io  image import  /opt/tar/" + tarFile.getOriginalFilename()); // 设置执行的命令
+            ((ChannelExec) execChannel).setCommand("ctr -n=k8s.io  image import " + imagePath+ "/" + tarFile.getOriginalFilename()); // 设置执行的命令
             execChannel.setInputStream(null);
             ((ChannelExec) execChannel).setErrStream(System.err);
             InputStream in = execChannel.getInputStream();

@@ -136,7 +136,20 @@ public class VirtuleStorageController {
                 sftpChannel.ls(persistentVolumePath); // 尝试列出目录
             } catch (SftpException e) {
                 if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
-                    sftpChannel.mkdir(persistentVolumePath); // 目录不存在，创建目录
+                    String[] dirs = persistentVolumePath.split("/");
+                    String path = "";
+                    for (String dir : dirs) {
+                        if (!dir.isEmpty()) {
+                            path += "/" + dir;
+                            try {
+                                sftpChannel.ls(path); // 尝试列出目录
+                            } catch (SftpException ex) {
+                                if (ex.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+                                    sftpChannel.mkdir(path); // 目录不存在，创建目录
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
