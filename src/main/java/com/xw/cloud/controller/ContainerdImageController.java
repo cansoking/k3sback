@@ -28,8 +28,7 @@ public class ContainerdImageController {
 
     /**
      * 通过节点ip、用户名和密码查询镜像
-     *
-     * @param
+     * @param vmInfo
      * @return
      * @throws IOException
      */
@@ -229,25 +228,28 @@ public class ContainerdImageController {
 
     /**
      * 通过节点ip、用户名和密码，镜像文件实现上传并创建镜像
-     *
      * @param tarFile
-     * @param vmInfo
+     * @param virtualMachineIp
+     * @param userName
+     * @param userPassword
      * @return
      * @throws IOException
      */
     @RequestMapping(value = "/uploadImage", method = RequestMethod.POST)
     @ResponseBody
     public String uploadImage(@RequestParam("tarFile") MultipartFile tarFile,
-                              @RequestBody VmInfo vmInfo) throws IOException {
+                              @RequestParam("virtualMachineIp") String virtualMachineIp,
+                              @RequestParam("userName") String userName,
+                              @RequestParam("userPassword") String userPassword) throws IOException {
 
 
 //        String virtualMachineIp = "192.168.174.133";
 //        String userName = "root";
 //        String userPassword = "@wsad1234";
 
-        String virtualMachineIp = vmInfo.getVirtualMachineIp();
-        String userName = vmInfo.getUserName();
-        String userPassword = vmInfo.getUserPassword();
+//        String virtualMachineIp = vmInfo.getVirtualMachineIp();
+//        String userName = vmInfo.getUserName();
+//        String userPassword = vmInfo.getUserPassword();
 
         Session session = null;
         Channel channel = null;
